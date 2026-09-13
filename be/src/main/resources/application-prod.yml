@@ -3,8 +3,8 @@ server:
 
 # Mã dùng để mở "tủ ảnh" - đổi giá trị này, không commit mã thật lên git công khai
 manager:
-  code: ${SECRET-CODE}
+  code: ${SECRET-CODE:1234}
 
 app:
   cors:
-    allowed-origins: ${ALLOWED_ORIGINS}
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
