@@ -4,3 +4,7 @@ server:
 # Mã dùng để mở "tủ ảnh" - đổi giá trị này, không commit mã thật lên git công khai
 manager:
   code: ${SECRET-CODE}
+
+app:
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS}

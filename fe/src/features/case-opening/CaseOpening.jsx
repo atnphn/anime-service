@@ -3,6 +3,9 @@ import { useCaseOpening } from "./useCaseOpening";
 import ImageManager from "./ImageManager";
 import styles from "./CaseOpening.module.css";
 
+// Đọc từ biến môi trường Vite (VITE_API_URL), fallback về localhost khi chạy dev
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+
 export default function CaseOpening() {
   const {
     reelImages,
@@ -107,7 +110,7 @@ export default function CaseOpening() {
     setCheckingCode(true);
     setCodeError("");
     try {
-      const res = await fetch("http://localhost:8080/api/manager/verify-code", {
+      const res = await fetch(`${API_BASE_URL}/api/manager/verify-code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: codeInput }),
@@ -159,7 +162,7 @@ export default function CaseOpening() {
 
       <div className={styles.topBar}>
         <button className={styles.managerToggle} onClick={handleManagerToggleClick}>
-          {showManager ? "Đóng rương bí mật" : "Mở rương bí mật"}
+          {showManager ? "Đóng tủ ảnh" : "Mở tủ ảnh"}
         </button>
       </div>
 
@@ -228,7 +231,7 @@ export default function CaseOpening() {
         <div className={styles.modalBackdrop}>
           <div className={styles.modalCard}>
             <p className={styles.confirmedText} style={{ fontSize: 16, margin: "0 0 16px" }}>
-              Nhập mã để mở rương bí mật
+              Nhập mã để mở tủ ảnh
             </p>
             <input
               type="password"
