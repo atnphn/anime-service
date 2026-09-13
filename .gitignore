@@ -1,0 +1,26 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.log
+
+# Java / Maven
+be/target/
+be/.idea/
+be/*.iml
+be/.classpath
+be/.project
+be/.settings/
+be/.factorypath
+
+# Node / Vite
+fe/node_modules/
+fe/dist/
+fe/.vite/
+fe/.cache/
+fe/npm-debug.log*
+fe/yarn-debug.log*
+fe/yarn-error.log*
