@@ -3,8 +3,9 @@ import { useCaseOpening } from "./useCaseOpening";
 import ImageManager from "./ImageManager";
 import styles from "./CaseOpening.module.css";
 
-// Đọc từ biến môi trường Vite (VITE_API_URL), fallback về localhost khi chạy dev
+// Đọc cấu hình từ biến môi trường Vite, có giá trị mặc định khi chạy dev
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const BRAND_NAME = import.meta.env.VITE_BRAND_NAME || "Phan lãng tử";
 
 export default function CaseOpening() {
   const {
@@ -161,6 +162,7 @@ export default function CaseOpening() {
       <audio ref={revealSoundRef} src="/sounds/reveal.mp3" preload="auto" />
 
       <div className={styles.topBar}>
+        <div className={styles.brandMark}>{BRAND_NAME}</div>
         <button className={styles.managerToggle} onClick={handleManagerToggleClick}>
           {showManager ? "Đóng tử cấm thành" : "Tử cấm thành"}
         </button>

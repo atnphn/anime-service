@@ -267,8 +267,53 @@
   width: 100%;
   max-width: 680px;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 18px;
+}
+
+.brandMark {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(135deg, #ee568d, #ffae59);
+  border: 2px solid #fff;
+  border-radius: 14px 14px 14px 4px;
+  padding: 9px 16px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  box-shadow: 0 4px 0 #d85d8b, 0 8px 18px rgba(232, 99, 143, 0.25);
+  animation: brandFloat 3s ease-in-out infinite;
+}
+.brandMark::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.7) 50%, transparent 75%);
+  transform: translateX(-120%);
+  animation: brandShine 3.8s ease-in-out infinite;
+}
+
+@keyframes brandFloat {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-3px) rotate(1deg); }
+}
+
+@keyframes brandShine {
+  0%, 35% { transform: translateX(-120%); }
+  65%, 100% { transform: translateX(120%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandMark,
+  .brandMark::after {
+    animation: none;
+  }
 }
 
 .managerToggle {
