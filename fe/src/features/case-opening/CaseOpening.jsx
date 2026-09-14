@@ -172,7 +172,7 @@ export default function CaseOpening() {
       <div className={styles.topBar}>
         <div className={styles.brandMark}>{BRAND_NAME}</div>
         <button className={styles.managerToggle} onClick={handleManagerToggleClick}>
-          {showManager ? "Đóng tủ ảnh" : "Mở tủ ảnh"}
+          {showManager ? "Đóng tử cấm thành" : "Tử cấm thành"}
         </button>
       </div>
 
@@ -242,7 +242,7 @@ export default function CaseOpening() {
         <div className={styles.modalBackdrop}>
           <div className={styles.modalCard}>
             <p className={styles.confirmedText} style={{ fontSize: 16, margin: "0 0 16px" }}>
-              Nhập mã để mở tủ ảnh
+              Ám hiệu để vào thành
             </p>
             <input
               type="password"
