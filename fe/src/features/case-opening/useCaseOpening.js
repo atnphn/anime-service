@@ -52,16 +52,24 @@ export function useCaseOpening() {
   const [history, setHistory] = useState([]);
   const spinTimeoutRef = useRef(null);
 
-  const loadPreview = useCallback(() => {
-    const pool = getImages();
-    setReelImages(buildReelFromPool(pool, 12));
+  const loadPreview = useCallback(async () => {
+    const images = await getImages(); // [{ id, url }]
+    const urls = images.map((img) => img.url);
+    if (urls.length === 0) {
+      setReelImages([]);
+      setWinnerIndex(-1);
+      return;
+    }
+    setReelImages(buildReelFromPool(urls, 12));
     setWinnerIndex(-1);
   }, []);
 
-  const openCase = useCallback(() => {
+  const openCase = useCallback(async () => {
     if (isSpinning) return;
-    const pool = getImages();
-    if (pool.length === 0) {
+
+    const images = await getImages();
+    const urls = images.map((img) => img.url);
+    if (urls.length === 0) {
       setStatus("Hòm đang đói ảnh rồi, thêm vài bé trong Tủ ảnh trước nha!");
       return;
     }
@@ -72,10 +80,10 @@ export function useCaseOpening() {
     setStatus("Bé ấy là...");
 
     const rarity = pickRarity();
-    const images = buildReelFromPool(pool, REEL_LENGTH);
-    const winnerUrl = images[WINNER_INDEX];
+    const reel = buildReelFromPool(urls, REEL_LENGTH);
+    const winnerUrl = reel[WINNER_INDEX];
 
-    setReelImages(images);
+    setReelImages(reel);
     setWinnerIndex(WINNER_INDEX);
     setWinnerRarity(rarity);
 

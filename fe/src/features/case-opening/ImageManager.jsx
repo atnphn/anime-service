@@ -1,33 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getImages, addImage, removeImage } from "./imageStore";
 import styles from "./CaseOpening.module.css";
 
 export default function ImageManager({ onImagesChange }) {
-  const [images, setImages] = useState(() => getImages());
+  const [images, setImages] = useState([]);
   const [urlInput, setUrlInput] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const handleAdd = () => {
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const data = await getImages();
+      if (mounted) {
+        setImages(data);
+        setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleAdd = async () => {
     const trimmed = urlInput.trim();
     if (!trimmed) {
-      setError("Nhập URL ảnh vào đây trước nha");
+      setError("Nhập một URL ảnh trước đã");
       return;
     }
     try {
       new URL(trimmed);
     } catch (e) {
-      setError("Ưm... URL này chưa đúng rồi nè");
+      setError("URL không hợp lệ");
       return;
     }
-    const updated = addImage(trimmed);
+    setSaving(true);
+    const updated = await addImage(trimmed);
     setImages(updated);
     setUrlInput("");
     setError("");
+    setSaving(false);
     onImagesChange?.(updated);
   };
 
-  const handleRemove = (url) => {
-    const updated = removeImage(url);
+  const handleRemove = async (id) => {
+    const updated = await removeImage(id);
     setImages(updated);
     onImagesChange?.(updated);
   };
@@ -52,23 +70,25 @@ export default function ImageManager({ onImagesChange }) {
           onKeyDown={handleKeyDown}
           className={styles.managerInput}
         />
-        <button className={styles.managerAddBtn} onClick={handleAdd}>
-          Cất ảnh
+        <button className={styles.managerAddBtn} onClick={handleAdd} disabled={saving}>
+          {saving ? "Đang lưu..." : "Cất ảnh"}
         </button>
       </div>
       {error && <div className={styles.managerError}>{error}</div>}
 
       <div className={styles.managerGrid}>
-        {images.length === 0 ? (
-          <span className={styles.emptyHistory}>Tủ đang trống, thêm vài bé vào nhé.</span>
+        {loading ? (
+          <span className={styles.emptyHistory}>Đang tải...</span>
+        ) : images.length === 0 ? (
+          <span className={styles.emptyHistory}>Chưa có ảnh nào, hãy thêm ít nhất một ảnh.</span>
         ) : (
-          images.map((url) => (
-            <div key={url} className={styles.managerItem}>
-              <img src={url} alt="" />
+          images.map((img) => (
+            <div key={img.id} className={styles.managerItem}>
+              <img src={img.url} alt="" />
               <button
                 className={styles.managerRemoveBtn}
-                onClick={() => handleRemove(url)}
-                aria-label="Cất ảnh này đi"
+                onClick={() => handleRemove(img.id)}
+                aria-label="Xóa ảnh"
               >
                 ×
               </button>

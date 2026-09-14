@@ -1,42 +1,40 @@
-const STORAGE_KEY = "case_opening_images";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
-const DEFAULT_IMAGES = [
-  "https://picsum.photos/seed/anime1/400/500",
-  "https://picsum.photos/seed/anime2/400/500",
-  "https://picsum.photos/seed/anime3/400/500",
-];
-
-export function getImages() {
+// Trả về danh sách ảnh dạng [{ id, url }, ...] lấy từ server
+export async function getImages() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_IMAGES;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_IMAGES;
+    const res = await fetch(`${API_BASE_URL}/api/images`);
+    if (!res.ok) throw new Error("Lấy danh sách ảnh thất bại");
+    return await res.json();
   } catch (e) {
-    return DEFAULT_IMAGES;
+    return [];
   }
 }
 
-export function saveImages(images) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(images));
-  } catch (e) {
-    // ignore lỗi storage đầy hoặc bị chặn
-  }
-}
-
-export function addImage(url) {
+export async function addImage(url) {
   const trimmed = url.trim();
   if (!trimmed) return getImages();
-  const current = getImages();
-  if (current.includes(trimmed)) return current;
-  const updated = [...current, trimmed];
-  saveImages(updated);
-  return updated;
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/images`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: trimmed }),
+    });
+    if (!res.ok) throw new Error("Thêm ảnh thất bại");
+  } catch (e) {
+    // bỏ qua, danh sách trả về vẫn phản ánh trạng thái hiện có trên server
+  }
+  return getImages();
 }
 
-export function removeImage(url) {
-  const updated = getImages().filter((img) => img !== url);
-  saveImages(updated.length > 0 ? updated : []);
-  return updated;
+export async function removeImage(id) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/images/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Xóa ảnh thất bại");
+  } catch (e) {
+    // bỏ qua
+  }
+  return getImages();
 }
