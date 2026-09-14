@@ -172,6 +172,7 @@ export default function CaseOpening() {
 
       <h1 className={styles.title}>Hòm quà anime</h1>
       <p className={styles.subtitle}>Bấm một cái, nhận một bé xinh nha ✨</p>
+      <p className={styles.soundHint}>🔊 Bật âm lượng để trải nghiệm trọn vẹn hơn nha!</p>
 
       <div className={styles.reelWrap} ref={wrapRef}>
         <div className={styles.marker} />

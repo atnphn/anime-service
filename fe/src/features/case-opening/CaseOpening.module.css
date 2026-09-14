@@ -61,7 +61,26 @@
 .subtitle {
   color: var(--sub);
   font-size: 15px;
-  margin: 0 0 34px;
+  margin: 0 0 8px;
+}
+
+.soundHint {
+  color: #d45d87;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 0 0 28px;
+  animation: soundHintPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes soundHintPulse {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soundHint {
+    animation: none;
+  }
 }
 
 .caseBox {
