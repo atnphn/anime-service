@@ -1,6 +1,7 @@
 package com.myservice.controller;
 
 import com.myservice.dto.AddImageRequest;
+import com.myservice.dto.AddImagesRequest;
 import com.myservice.dto.ImageDto;
 import com.myservice.entity.CaseImage;
 import com.myservice.repository.CaseImageRepository;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -51,6 +53,30 @@ public class CaseImageController {
         CaseImage saved = repository.save(new CaseImage(url));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ImageDto(saved.getId(), saved.getUrl()));
+    }
+
+    @PostMapping("/batch")
+    public ResponseEntity<List<ImageDto>> addImages(@RequestBody AddImagesRequest request) {
+        List<String> urls = request.getUrls() == null ? List.of() : request.getUrls();
+        List<CaseImage> savedOrExisting = new ArrayList<>();
+
+        for (String rawUrl : urls) {
+            if (rawUrl == null) continue;
+            String url = rawUrl.trim();
+            if (url.isEmpty()) continue;
+
+            Optional<CaseImage> existing = repository.findByUrl(url);
+            if (existing.isPresent()) {
+                savedOrExisting.add(existing.get());
+            } else {
+                savedOrExisting.add(repository.save(new CaseImage(url)));
+            }
+        }
+
+        List<ImageDto> result = repository.findAll().stream()
+                .map(img -> new ImageDto(img.getId(), img.getUrl()))
+                .collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @DeleteMapping("/{id}")

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getImages, addImage, removeImage } from "./imageStore";
+import { getImages, addImages, removeImage } from "./imageStore";
 import styles from "./CaseOpening.module.css";
 
 export default function ImageManager({ onImagesChange }) {
@@ -24,24 +24,44 @@ export default function ImageManager({ onImagesChange }) {
   }, []);
 
   const handleAdd = async () => {
-    const trimmed = urlInput.trim();
-    if (!trimmed) {
-      setError("Nhập một URL ảnh trước đã");
+    const rawLines = urlInput
+      .split(/[\n,]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    if (rawLines.length === 0) {
+      setError("Nhập ít nhất một URL ảnh trước đã");
       return;
     }
-    try {
-      new URL(trimmed);
-    } catch (e) {
-      setError("URL không hợp lệ");
+
+    const validUrls = [];
+    const invalidUrls = [];
+    for (const line of rawLines) {
+      try {
+        new URL(line);
+        validUrls.push(line);
+      } catch (e) {
+        invalidUrls.push(line);
+      }
+    }
+
+    if (validUrls.length === 0) {
+      setError("Không có URL hợp lệ nào cả");
       return;
     }
+
     setSaving(true);
-    const updated = await addImage(trimmed);
+    const updated = await addImages(validUrls);
     setImages(updated);
     setUrlInput("");
-    setError("");
     setSaving(false);
     onImagesChange?.(updated);
+
+    if (invalidUrls.length > 0) {
+      setError(`Đã thêm ${validUrls.length} ảnh, bỏ qua ${invalidUrls.length} URL không hợp lệ`);
+    } else {
+      setError("");
+    }
   };
 
   const handleRemove = async (id) => {
@@ -50,26 +70,23 @@ export default function ImageManager({ onImagesChange }) {
     onImagesChange?.(updated);
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleAdd();
-  };
-
   return (
     <div className={styles.manager}>
       <h2 className={styles.managerTitle}>Tủ ảnh xinh xắn</h2>
 
       <div className={styles.managerInputRow}>
-        <input
-          type="text"
-          placeholder="Dán URL ảnh vào đây nha..."
+        <textarea
+          placeholder="Dán nhiều URL ảnh vào đây, mỗi URL một dòng (hoặc cách nhau bằng dấu phẩy) nha..."
           value={urlInput}
           onChange={(e) => {
             setUrlInput(e.target.value);
             if (error) setError("");
           }}
-          onKeyDown={handleKeyDown}
           className={styles.managerInput}
+          rows={4}
         />
+      </div>
+      <div className={styles.managerInputRow}>
         <button className={styles.managerAddBtn} onClick={handleAdd} disabled={saving}>
           {saving ? "Đang lưu..." : "Cất ảnh"}
         </button>

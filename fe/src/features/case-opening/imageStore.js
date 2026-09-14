@@ -27,6 +27,22 @@ export async function addImage(url) {
   return getImages();
 }
 
+export async function addImages(urls) {
+  const trimmed = urls.map((u) => u.trim()).filter((u) => u.length > 0);
+  if (trimmed.length === 0) return getImages();
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/images/batch`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ urls: trimmed }),
+    });
+    if (!res.ok) throw new Error("Thêm ảnh thất bại");
+  } catch (e) {
+    // bỏ qua, danh sách trả về vẫn phản ánh trạng thái hiện có trên server
+  }
+  return getImages();
+}
+
 export async function removeImage(id) {
   try {
     const res = await fetch(`${API_BASE_URL}/api/images/${id}`, {
