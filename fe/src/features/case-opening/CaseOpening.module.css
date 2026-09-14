@@ -323,11 +323,15 @@
 }
 
 .managerAddBtn {
+  width: min(100%, 180px);
+  min-height: 46px;
+  margin: 0 auto;
   background: var(--cyan);
   color: #145866;
   border: none;
   font-weight: 600;
-  padding: 0 20px;
+  font-size: 15px;
+  padding: 10px 24px;
   border-radius: 12px;
   cursor: pointer;
 }
