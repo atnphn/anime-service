@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useCaseOpening } from "./useCaseOpening";
 import ImageManager from "./ImageManager";
+import { incrementVisit } from "./visitStore";
 import styles from "./CaseOpening.module.css";
 
 // Đọc cấu hình từ biến môi trường Vite, có giá trị mặc định khi chạy dev
@@ -36,6 +37,13 @@ export default function CaseOpening() {
   useEffect(() => {
     loadPreview();
   }, [loadPreview]);
+
+  useEffect(() => {
+    if (!sessionStorage.getItem("visited_this_session")) {
+      incrementVisit();
+      sessionStorage.setItem("visited_this_session", "1");
+    }
+  }, []);
 
   useEffect(() => {
     if (!reelRef.current || !wrapRef.current) return;
@@ -164,7 +172,7 @@ export default function CaseOpening() {
       <div className={styles.topBar}>
         <div className={styles.brandMark}>{BRAND_NAME}</div>
         <button className={styles.managerToggle} onClick={handleManagerToggleClick}>
-          {showManager ? "Đóng tử cấm thành" : "Tử cấm thành"}
+          {showManager ? "Đóng tủ ảnh" : "Mở tủ ảnh"}
         </button>
       </div>
 
@@ -234,7 +242,7 @@ export default function CaseOpening() {
         <div className={styles.modalBackdrop}>
           <div className={styles.modalCard}>
             <p className={styles.confirmedText} style={{ fontSize: 16, margin: "0 0 16px" }}>
-              Ám hiệu để vào thành
+              Nhập mã để mở tủ ảnh
             </p>
             <input
               type="password"

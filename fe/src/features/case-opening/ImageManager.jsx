@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getImages, addImages, removeImage } from "./imageStore";
+import { getVisitCount } from "./visitStore";
 import styles from "./CaseOpening.module.css";
 
 export default function ImageManager({ onImagesChange }) {
@@ -8,6 +9,7 @@ export default function ImageManager({ onImagesChange }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [visitCount, setVisitCount] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -17,6 +19,17 @@ export default function ImageManager({ onImagesChange }) {
         setImages(data);
         setLoading(false);
       }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const count = await getVisitCount();
+      if (mounted) setVisitCount(count);
     })();
     return () => {
       mounted = false;
@@ -73,6 +86,9 @@ export default function ImageManager({ onImagesChange }) {
   return (
     <div className={styles.manager}>
       <h2 className={styles.managerTitle}>Tủ ảnh xinh xắn</h2>
+      <p className={styles.emptyHistory} style={{ marginBottom: 14 }}>
+        {visitCount === null ? "Đang tải lượt truy cập..." : `Lượt truy cập trang: ${visitCount}`}
+      </p>
 
       <div className={styles.managerInputRow}>
         <textarea
